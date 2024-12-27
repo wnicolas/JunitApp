@@ -5,14 +5,39 @@ import org.nibuitrago.junit_app.exceptions.DineroInsuficienteException;
 
 import javax.swing.*;
 import java.math.BigDecimal;
+import java.sql.SQLOutput;
 
 import static org.junit.jupiter.api.Assertions.*;
-
+//@TestInstance(TestInstance.Lifecycle.PER_CLASS) //Para que haya una sola instancia de la clase. El comportamiento por defecto el PER_METHOD
 class CuentaTest {
+    Cuenta cuenta;
+
+    @BeforeAll
+    static void beforeAll() {
+        //Mètodo estàtico porque se ejcuta antes de la instanciaciòn de la clase
+        System.out.println("Inicializando los test");
+    }
+
+    @AfterAll
+    static void afterAll() {
+        //Mètodo estàtico porque se ejecuta despues de la instanciaciòn del objeto.
+        System.out.println("Finalizando los test");
+    }
+
+    @BeforeEach
+    void pruebaBeforeEach() {
+        cuenta = new Cuenta("Nicolas", new BigDecimal("1000.12345"));
+        System.out.println("Se inicia el mètodo de test");
+    }
+
+    @AfterEach
+    void pruebaAfterEach() {
+        System.out.println("Se finaliza el mètodo");
+    }
+
     @Test
     @DisplayName("Probando el nombre de la cuenta de Nicolas")
     void testNombreCuenta() {
-        Cuenta cuenta = new Cuenta("Nicolas", new BigDecimal("1000.12345"));
         String esperado = "Nicolas";
         String real = cuenta.getPersona();
         assertEquals(esperado, real);
@@ -21,7 +46,6 @@ class CuentaTest {
     @Test
     @DisplayName("Probando el saldo de la cuenta")
     void testSaldoCuenta() {
-        Cuenta cuenta = new Cuenta("Nicolas", new BigDecimal("1000.12345"));
         assertEquals(1000.12345, cuenta.getSaldo().doubleValue());
         assertFalse(cuenta.getSaldo().compareTo(BigDecimal.ZERO) < 0);
         assertTrue(cuenta.getSaldo().compareTo(BigDecimal.ZERO) >= 0);
@@ -41,7 +65,6 @@ class CuentaTest {
     @Test
     @DisplayName("Testeando los dèbitos")
     void debitoTets() {
-        Cuenta cuenta = new Cuenta("Nicolas", new BigDecimal("1000.567"));
         cuenta.debitar(new BigDecimal("100"));
         assertNotNull(cuenta);
         assertNotNull(cuenta.getSaldo());
@@ -51,7 +74,6 @@ class CuentaTest {
     @Test
     @DisplayName("Probando los crèditos")
     void creditoTets() {
-        Cuenta cuenta = new Cuenta("Nicolas", new BigDecimal("1000.567"));
         cuenta.acreditar(new BigDecimal("100"));
         assertNotNull(cuenta);
         assertNotNull(cuenta.getSaldo());
@@ -60,10 +82,10 @@ class CuentaTest {
 
     @Test
     @DisplayName("Proabdno la funcionalidad de dinero induficiente")
-    @Disabled //Se coloca para que aparezca en el informe. Aparece como "ignored"
+        //@Disabled
+        //Se coloca para que aparezca en el informe. Aparece como "ignored"
     void dineroInsuficienteExceptionTest() {
-        fail("Se fuerza el fallo del test");
-        Cuenta cuenta = new Cuenta("Nicolas", new BigDecimal("1000.12345"));
+        //fail("Se fuerza el fallo del test");
         Exception e = assertThrows(DineroInsuficienteException.class, () -> {
             cuenta.debitar(new BigDecimal(1500));
         });
